@@ -36,8 +36,9 @@ Render the examples. This needs draw.io desktop and mermaid-cli:
 make -C examples/diagrams
 ```
 
-CI runs the lint, type, test and example checks on every pull request to `master`. It does
-not render, so inspecting the render is still your job.
+CI runs the lint, type, test and example checks on every pull request and push to `master`,
+and sends test coverage to SonarQube Cloud. It does not render, so inspecting the render is
+still your job.
 
 `lint-before.drawio` fails the layout check on purpose, for the README. It stays out of
 `DRAWIO` in the examples' `Makefile`, and `tests/test_examples.py` pins its result.
