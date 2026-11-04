@@ -78,7 +78,8 @@ def test_jump_on_later_edge_passes_and_is_listed(
     path = _crossing(tmp_path, jump_vertical=False, jump_horizontal=True)
     code, out = _run(path, capsys)
     assert code == 0
-    assert "JUMP" in out and "jumps over" in out
+    assert "JUMP" in out
+    assert "jumps over" in out
 
 
 def test_jump_on_earlier_edge_fails(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:

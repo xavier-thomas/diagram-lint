@@ -104,7 +104,9 @@ def test_changed_content_fails_and_says_what_changed(
 def test_every_difference_is_printed(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     code, out = _diff(_doc(), _doc(a_label="Renamed", edge_label="calls"), tmp_path, capsys)
     assert code == 1
-    assert "node differs:" in out and "edge differs:" in out and "box holds differs:" in out
+    assert "node differs:" in out
+    assert "edge differs:" in out
+    assert "box holds differs:" in out
 
 
 def test_line_breaks_in_a_label_count_as_a_separator() -> None:

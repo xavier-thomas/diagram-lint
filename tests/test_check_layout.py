@@ -42,7 +42,9 @@ def test_edge_without_anchors_is_unverified_not_clean(
     doc.edge(a, b, "unpinned")
     code, out = _run(doc, tmp_path, capsys)
     assert code == 1
-    assert "UNVERIFIED" in out and "'unpinned'" in out and "no pinned anchors" in out
+    assert "UNVERIFIED" in out
+    assert "'unpinned'" in out
+    assert "no pinned anchors" in out
     assert "clean" not in out
 
 
@@ -63,7 +65,8 @@ def test_diagonal_segment_is_unverified_not_clean(
     doc.edge(a, b, "diagonal", lib.S_EDGE + lib.anchor((1, 0.5), (0, 0.5)))
     code, out = _run(doc, tmp_path, capsys)
     assert code == 1
-    assert "UNVERIFIED" in out and "neither vertical nor horizontal" in out
+    assert "UNVERIFIED" in out
+    assert "neither vertical nor horizontal" in out
     assert "clean" not in out
 
 
@@ -127,7 +130,8 @@ def _line_past_a_node(blocker_y: float) -> Any:
 def test_line_through_a_node_fails(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     code, out = _run(_line_past_a_node(0), tmp_path, capsys)
     assert code == 1
-    assert "OVERLAP" in out and "'long' is drawn over node" in out
+    assert "OVERLAP" in out
+    assert "'long' is drawn over node" in out
     assert "clean" not in out
 
 
@@ -176,7 +180,10 @@ def test_one_bad_file_fails_the_run_and_every_file_is_reported(
     code = check_layout.main(["check_layout.py", str(good), str(bad)])
     out = capsys.readouterr().out
     assert code == 1
-    assert "good.drawio" in out and "bad.drawio" in out and "clean" in out and "OVERLAP" in out
+    assert "good.drawio" in out
+    assert "bad.drawio" in out
+    assert "clean" in out
+    assert "OVERLAP" in out
 
 
 def test_no_arguments_prints_usage(capsys: pytest.CaptureFixture[str]) -> None:
