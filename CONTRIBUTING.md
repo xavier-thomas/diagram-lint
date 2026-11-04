@@ -1,8 +1,9 @@
 # Contributing
 
-Bug reports and pull requests are welcome. For a layout check that gets something wrong,
-include the `.drawio` or `.mmd` file, or the smallest one that shows the problem, along
-with the script's output.
+Bug reports and pull requests are welcome. To report a bug, use the
+[bug report form](https://github.com/xavier-thomas/diagram-lint/issues/new?template=bug_report.yml).
+For a layout check that gets something wrong, include the `.drawio` or `.mmd` file, or the
+smallest one that shows the problem, along with the script's output.
 
 ## Setup
 
