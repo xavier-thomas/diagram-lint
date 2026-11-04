@@ -17,3 +17,7 @@ strict = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["skills/diagram-lint/scripts"]
+relative_files = true

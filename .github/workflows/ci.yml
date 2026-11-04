@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  push:
+    branches: [master]
   pull_request:
     branches: [master]
 
@@ -12,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # SonarQube uses the full history to tell new code from old
+          fetch-depth: 0
 
       # The oldest version the skill supports, as in pyproject.toml
       - uses: actions/setup-python@v7
@@ -19,7 +24,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install tools
-        run: pip install ruff mypy pytest
+        run: pip install ruff mypy pytest pytest-cov
 
       - name: Lint
         run: ruff check .
@@ -28,7 +33,20 @@ jobs:
         run: mypy --strict skills/diagram-lint/scripts
 
       - name: Test
-        run: pytest
+        run: pytest --cov --cov-report=term --cov-report=xml
 
       - name: Check example diagrams
         run: make -C examples/diagrams check
+
+      # Pull requests from forks get no secrets, so they skip the analysis rather than fail.
+      - name: Check for a SonarQube token
+        id: sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: echo "configured=${SONAR_TOKEN:+true}" >> "$GITHUB_OUTPUT"
+
+      - name: SonarQube analysis
+        if: steps.sonar.outputs.configured == 'true'
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

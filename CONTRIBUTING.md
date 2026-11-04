@@ -1,15 +1,16 @@
 # Contributing
 
-Bug reports and pull requests are welcome. For a layout check that gets something wrong,
-include the `.drawio` or `.mmd` file, or the smallest one that shows the problem, along
-with the script's output.
+Bug reports and pull requests are welcome. To report a bug, use the
+[bug report form](https://github.com/xavier-thomas/diagram-lint/issues/new?template=bug_report.yml).
+For a layout check that gets something wrong, include the `.drawio` or `.mmd` file, or the
+smallest one that shows the problem, along with the script's output.
 
 ## Setup
 
 You need Python 3.12 or later, and the development tools:
 
 ```bash
-pip install ruff mypy pytest
+pip install ruff mypy pytest pytest-cov
 ```
 
 To render diagrams, you also need
@@ -19,8 +20,8 @@ need them.
 
 ## Run the checks
 
-[CI](.github/workflows/ci.yml) runs these on every pull request to `master`. Run them
-locally first:
+[CI](.github/workflows/ci.yml) runs these on every pull request and push to `master`. Run
+them locally first:
 
 ```bash
 ruff check . && mypy --strict skills/diagram-lint/scripts && pytest
@@ -28,6 +29,14 @@ ruff check . && mypy --strict skills/diagram-lint/scripts && pytest
 
 ```bash
 make -C examples/diagrams check
+```
+
+CI also measures test coverage of the scripts and sends it to
+[SonarQube Cloud](https://sonarcloud.io/summary/overall?id=xavier-thomas_diagram-lint). To
+see it locally:
+
+```bash
+pytest --cov --cov-report=term-missing
 ```
 
 ## Make a change

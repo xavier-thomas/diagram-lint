@@ -1,5 +1,8 @@
 # diagram-lint
 
+[![Tests](https://img.shields.io/github/actions/workflow/status/xavier-thomas/diagram-lint/ci.yml?branch=master&label=tests)](https://github.com/xavier-thomas/diagram-lint/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/sonar/coverage/xavier-thomas_diagram-lint?server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/summary/overall?id=xavier-thomas_diagram-lint)
+[![Quality gate](https://img.shields.io/sonar/quality_gate/xavier-thomas_diagram-lint?server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/summary/overall?id=xavier-thomas_diagram-lint)
 [![Release](https://img.shields.io/github/v/release/xavier-thomas/diagram-lint)](https://github.com/xavier-thomas/diagram-lint/releases/latest)
 [![Licence](https://img.shields.io/github/license/xavier-thomas/diagram-lint)](LICENSE)
 [![skills.sh](https://skills.sh/b/xavier-thomas/diagram-lint)](https://skills.sh/xavier-thomas/diagram-lint)

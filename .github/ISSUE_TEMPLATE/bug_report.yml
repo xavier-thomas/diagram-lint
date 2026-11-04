@@ -1,0 +1,66 @@
+name: Bug report
+description: A check got something wrong, or the skill produced a broken diagram.
+labels: [bug]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where is the problem?
+      options:
+        - check_layout.py
+        - content_diff.py
+        - check_mermaid.py
+        - preview.py
+        - drawio_lib.py
+        - Skill instructions or guides
+        - Starter Makefile or config
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened?
+      description: >-
+        For a check, say whether it failed a correct diagram or passed a broken one. Add a
+        screenshot of the render if the problem is visible in it.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Diagram source
+      description: >-
+        The `.drawio` or `.mmd` file, or the smallest one that shows the problem. Paste it here,
+        or attach it as a `.txt` or `.zip` file. Remove anything you would not want made public.
+  - type: textarea
+    id: output
+    attributes:
+      label: Script output
+      description: The command you ran and what it printed.
+      render: text
+  - type: input
+    id: skill-version
+    attributes:
+      label: Skill version
+      description: The `version` in `SKILL.md`.
+      placeholder: "1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include whichever of these apply.
+      placeholder: |
+        OS:
+        Python:
+        draw.io desktop:
+        mermaid-cli:
+        Agent:
