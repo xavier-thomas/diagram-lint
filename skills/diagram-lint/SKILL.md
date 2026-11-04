@@ -42,12 +42,14 @@ where the project keeps its diagram sources.
 ```bash
 python3 diagrams/make_diagrams.py                              # regenerate the .drawio files
 python3 <skill>/scripts/check_layout.py diagrams/*.drawio      # check draw.io geometry
+python3 <skill>/scripts/check_mermaid.py diagrams/*.mmd        # check Mermaid self-messages
 python3 <skill>/scripts/content_diff.py old.drawio new.drawio  # after a re-layout, prove the content is unchanged
 python3 <skill>/scripts/preview.py diagrams/example.drawio     # rough SVG if draw.io is not installed
 make -C diagrams                                               # real renders; needs draw.io desktop and mermaid-cli
 ```
 
-`check_layout.py` fails on any edge it reports as `UNVERIFIED`.
+`check_layout.py` fails on any edge it reports as `UNVERIFIED`. `check_mermaid.py`
+fails on any self-message that carries text. `make -C diagrams check` runs both.
 
 ## Inspect the render
 
@@ -65,6 +67,7 @@ geometry check is not enough: it cannot see a label on a caption or a blank icon
    - No edge label sits on a caption, another label, an elbow's corner or a boundary line.
    - Every box is larger than its text, with clear space on both sides. No text touches
      a box's edge or spills outside it.
+   - No step number sits on its text, and no self-message label crosses its lifeline.
    - No icon is an empty box. Unknown stencil names render blank.
    - Every logo is recognisable at its drawn size on a white background.
    - The theme is light, with nothing adapting to a dark viewer.
@@ -81,3 +84,5 @@ geometry check is not enough: it cannot see a label on a caption or a blank icon
 
 Compare only `.drawio` and `.svg` files. PNG bytes drift with fonts and browser
 versions, so comparing them fails builds for no design reason.
+
+Run `make -C diagrams check` as well, if the project has CI. It needs only Python.

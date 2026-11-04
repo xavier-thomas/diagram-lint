@@ -37,6 +37,7 @@ $(DRAWIO): .drawio-sources ;
 # Exits non-zero while any edge is UNVERIFIED, so it gates nothing else.
 check: sources
 	python3 $(SKILL)/scripts/check_layout.py $(DRAWIO)
+	python3 $(SKILL)/scripts/check_mermaid.py $(MMD)
 
 # The config is an input: a font change re-renders every Mermaid diagram.
 %.svg: %.mmd $(MERMAID_CFG)

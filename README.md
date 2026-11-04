@@ -23,6 +23,8 @@ Use it to enable agents to generate professional looking diagrams that live in v
   its node. It reports any route it cannot predict as `UNVERIFIED`.
 - **Content (draw.io):** after a re-layout, `content_diff.py` confirms that the node
   labels, edges and boundary contents are unchanged.
+- **Self-messages (Mermaid):** `check_mermaid.py` fails on a self-message that carries
+  text, which would sit on its step number and lifeline.
 - **Render inspection (both):** a checklist catches what the scripts cannot, such as
   labels on captions, blank icons and lines that touch.
 
