@@ -77,13 +77,18 @@ jobs:
           path: coverage/gremlins/
           if-no-files-found: error
 
-  # A separate job, so that the third-party tools above never run with write access.
-  publish-mutation-score:
+  # A separate job, so that the third-party tools above never run with deployment access.
+  publish-mutation-report:
     if: github.event_name == 'push'
     needs: mutation
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
 
@@ -92,17 +97,16 @@ jobs:
           name: mutation-report
           path: ${{ runner.temp }}/mutation-report
 
-      - name: Write badge data
-        run: python3 .github/scripts/mutation_score.py "$RUNNER_TEMP/mutation-report/gremlins.json" --badge "$RUNNER_TEMP/mutation.json"
-
-      # The README badge reads this file. The branch holds one commit, replaced on each run.
-      - name: Publish to the badges branch
+      # The report for people, and the score for the README badge
+      - name: Build the site
         run: |
-          git checkout --orphan badges
-          git rm -rfq .
-          cp "$RUNNER_TEMP/mutation.json" .
-          git add mutation.json
-          git -c user.name="github-actions[bot]" \
-              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-              commit -qm "Update mutation score"
-          git push --force origin badges
+          mkdir site
+          cp "$RUNNER_TEMP/mutation-report/index.html" site/
+          python3 .github/scripts/mutation_score.py "$RUNNER_TEMP/mutation-report/gremlins.json" --badge site/mutation.json
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v5
