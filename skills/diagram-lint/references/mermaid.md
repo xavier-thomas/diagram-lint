@@ -13,6 +13,22 @@ Sequences, logic flows and component diagrams are edited directly as `diagrams/*
 
 If a diagram must be overlap-free, move it to draw.io and record that decision.
 
+## Box padding
+
+If text is tight in its box, fix the font rather than the padding. Set `fontFamily`
+in `mermaid-config.json` to a font that every machine rendering the diagrams has.
+
+- Do not raise `wrapPadding`, which pushes message labels onto their arrows.
+- Do not raise `noteMargin`, which leaves the text high in a taller note.
+- Do not shorten the text to make one box fit.
+
+A note over two participants takes its width from them, not from its text, so the font
+cannot fix it. Start the text with `wrap:` to keep it inside the note:
+
+```text
+Note over W,D: wrap: The server checks its cache before it queries the database
+```
+
 ## Rendering
 
 Install [mermaid-cli](https://github.com/mermaid-js/mermaid-cli), then render:
@@ -37,6 +53,7 @@ The `Makefile` passes these flags:
 |------|-----|
 | `-b white` | Sets the background explicitly |
 | `-w 2600` | Sets the page width. The default is 800 |
+| `-c <file>` | Names the font Mermaid uses to size and draw text |
 | `-p <file>` | Sets a puppeteer config, only when `PUPPETEER_CFG` is given |
 
 If mermaid-cli cannot find Chrome, point it at one:

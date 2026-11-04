@@ -27,9 +27,12 @@ are picked up automatically. See the
 
 If the project has no `diagrams/` directory:
 
-1. Copy `assets/Makefile` and `assets/make_diagrams.py` into a new `diagrams/` directory.
-2. In both files, set `SKILL` to this directory's location.
-3. Add `.drawio-sources` and `*.preview.svg` to the project's `.gitignore`.
+1. Copy `assets/Makefile`, `assets/make_diagrams.py` and `assets/mermaid-config.json`
+   into a new `diagrams/` directory.
+2. In `Makefile` and `make_diagrams.py`, set `SKILL` to this directory's location.
+3. In `mermaid-config.json`, set `fontFamily` to a font that every machine rendering
+   the diagrams has.
+4. Add `.drawio-sources` and `*.preview.svg` to the project's `.gitignore`.
 
 ## Commands
 
@@ -59,7 +62,9 @@ geometry check is not enough: it cannot see a label on a caption or a blank icon
    - No line runs through a node or icon caption.
    - No lines cross, except at an agreed line jump.
    - No lines touch, except at a shared endpoint, and none is drawn on another.
-   - No edge label sits on a caption, another label or an elbow's corner.
+   - No edge label sits on a caption, another label, an elbow's corner or a boundary line.
+   - Every box is larger than its text, with clear space on both sides. No text touches
+     a box's edge or spills outside it.
    - No icon is an empty box. Unknown stencil names render blank.
    - Every logo is recognisable at its drawn size on a white background.
    - The theme is light, with nothing adapting to a dark viewer.

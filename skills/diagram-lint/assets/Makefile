@@ -10,7 +10,8 @@ DRAWIO ?= example.drawio
 SVGS := $(MMD:.mmd=.svg) $(DRAWIO:.drawio=.svg)
 PNGS := $(MMD:.mmd=.png) $(DRAWIO:.drawio=.png)
 
-MMDC_FLAGS := -b white -w 2600
+MERMAID_CFG ?= mermaid-config.json
+MMDC_FLAGS := -b white -w 2600 -c $(MERMAID_CFG)
 ifdef PUPPETEER_CFG
 MMDC_FLAGS += -p $(PUPPETEER_CFG)
 endif
@@ -30,14 +31,17 @@ sources: .drawio-sources
 .drawio-sources: make_diagrams.py $(SKILL)/scripts/drawio_lib.py
 	python3 make_diagrams.py
 	@touch $@
+# Without this, the first run cannot find a rule for the renders of a new .drawio file.
+$(DRAWIO): .drawio-sources ;
 
 # Exits non-zero while any edge is UNVERIFIED, so it gates nothing else.
 check: sources
 	python3 $(SKILL)/scripts/check_layout.py $(DRAWIO)
 
-%.svg: %.mmd
+# The config is an input: a font change re-renders every Mermaid diagram.
+%.svg: %.mmd $(MERMAID_CFG)
 	mmdc $(MMDC_FLAGS) -i $< -o $@
-%.png: %.mmd
+%.png: %.mmd $(MERMAID_CFG)
 	mmdc $(MMDC_FLAGS) -i $< -o $@
 %.svg: %.drawio
 	$(DRAWIO_BIN) $(DRAWIO_FLAGS) -f svg $(DRAWIO_SVG_FLAGS) -o $@ $<
