@@ -36,7 +36,8 @@ Render the example. This needs draw.io desktop and mermaid-cli:
 make -C examples/diagrams
 ```
 
-No CI runs these checks. The only workflow publishes releases, so run them yourself.
+CI runs the lint, type, test and example checks on every pull request to `master`. It does
+not render, so inspecting the render is still your job.
 
 ## Rules
 

@@ -19,7 +19,8 @@ need them.
 
 ## Run the checks
 
-No CI runs these yet, so run them before opening a pull request:
+[CI](.github/workflows/ci.yml) runs these on every pull request to `master`. Run them
+locally first:
 
 ```bash
 ruff check . && mypy --strict skills/diagram-lint/scripts && pytest
