@@ -36,8 +36,8 @@ Render the examples. This needs draw.io desktop and mermaid-cli:
 make -C examples/diagrams
 ```
 
-To find what the tests would miss, run mutation testing. This needs `pytest-gremlins`, and
-is not part of CI:
+To find what the tests would miss, run mutation testing. This needs `pytest-gremlins`. CI
+reports the score but does not fail on it yet:
 
 ```bash
 pytest --gremlins --gremlin-parallel

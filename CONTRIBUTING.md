@@ -43,7 +43,11 @@ pytest --cov --cov-report=term-missing
 
 Coverage shows which lines the tests run, not whether they would notice a bug.
 [pytest-gremlins](https://github.com/mikelane/pytest-gremlins) makes small changes to the
-scripts and checks that a test fails for each one. It is optional and not part of CI.
+scripts and checks that a test fails for each one. CI runs it on every pull request and
+push to `master`, shows the score in the job summary and uploads the full report. It does
+not fail the build yet. The score on `master` feeds the badge in the README.
+
+To run it locally:
 
 ```bash
 pip install pytest-gremlins
