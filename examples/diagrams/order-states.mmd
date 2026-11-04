@@ -1,0 +1,11 @@
+stateDiagram-v2
+    [*] --> Pending: Order placed
+    Pending --> Paid: Payment captured
+    Pending --> Cancelled: Payment failed
+    Paid --> Packing: Stock reserved
+    Paid --> Refunded: Out of stock
+    Packing --> Shipped: Handed to carrier
+    Shipped --> Delivered: Proof of delivery
+    Shipped --> Returned: Delivery failed
+    Delivered --> Returned: Return requested
+    Returned --> Refunded: Goods inspected

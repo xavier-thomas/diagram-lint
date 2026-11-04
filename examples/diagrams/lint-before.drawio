@@ -1,0 +1,57 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="lint-before" id="d1">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="880" pageHeight="400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="n2" value="&lt;b&gt;Gateway&lt;/b&gt;&lt;br/&gt;&lt;i&gt;[Envoy]&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;verticalAlign=top;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="150" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="n3" value="&lt;b&gt;Orders&lt;/b&gt;&lt;br/&gt;&lt;i&gt;[Go]&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;verticalAlign=top;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="370" y="120" width="150" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="n4" value="&lt;b&gt;Billing&lt;/b&gt;&lt;br/&gt;&lt;i&gt;[Go]&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;verticalAlign=top;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="120" width="150" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="n5" value="&lt;b&gt;Queue&lt;/b&gt;&lt;br/&gt;&lt;i&gt;[RabbitMQ]&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;verticalAlign=top;spacingTop=6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="370" y="300" width="150" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="n6" value="&lt;b&gt;Database&lt;/b&gt;&lt;br/&gt;&lt;i&gt;[PostgreSQL]&lt;/i&gt;" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="300" width="150" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="n7" value="Orders" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;endArrow=blockThin;endFill=1;exitX=1;exitY=0.7429;exitDx=0;exitDy=0;entryX=0;entryY=0.7429;entryDx=0;entryDy=0;" edge="1" parent="1" source="n2" target="n3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="280.0" y="172"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n8" value="Invoices" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;endArrow=blockThin;endFill=1;exitX=1;exitY=0.2571;exitDx=0;exitDy=0;entryX=0;entryY=0.2571;entryDx=0;entryDy=0;" edge="1" parent="1" source="n2" target="n4">
+          <mxGeometry x="-0.65" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="445.0" y="138"/>
+            </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n9" value="Writes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n3" target="n6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="445" y="235"/>
+              <mxPoint x="775" y="235"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n10" value="Publishes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;endArrow=blockThin;endFill=1;exitX=0.2667;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n4" target="n5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="740" y="235"/>
+              <mxPoint x="740" y="262"/>
+              <mxPoint x="445" y="262"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

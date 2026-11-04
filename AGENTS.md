@@ -13,7 +13,7 @@ it in other projects, so its `diagrams/` paths do not exist here. The equivalent
 | `skills/diagram-lint/references/` | Guides for each toolchain, loaded by `SKILL.md` |
 | `skills/diagram-lint/scripts/` | `drawio_lib.py` and the check and preview scripts |
 | `skills/diagram-lint/assets/` | Starter files that users copy into their projects |
-| `examples/diagrams/` | Worked example, built with the skill's starter `Makefile` |
+| `examples/diagrams/` | Worked examples, built with the skill's starter `Makefile` |
 | `tests/` | Tests for the scripts. Not installed with the skill |
 
 ## Commands
@@ -24,13 +24,13 @@ Run these from the repository root after any change to a script:
 ruff check . && mypy --strict skills/diagram-lint/scripts && pytest
 ```
 
-Check the example. This needs only Python:
+Check the examples. This needs only Python:
 
 ```bash
 make -C examples/diagrams check
 ```
 
-Render the example. This needs draw.io desktop and mermaid-cli:
+Render the examples. This needs draw.io desktop and mermaid-cli:
 
 ```bash
 make -C examples/diagrams
@@ -38,6 +38,9 @@ make -C examples/diagrams
 
 CI runs the lint, type, test and example checks on every pull request to `master`. It does
 not render, so inspecting the render is still your job.
+
+`lint-before.drawio` fails the layout check on purpose, for the README. It stays out of
+`DRAWIO` in the examples' `Makefile`, and `tests/test_examples.py` pins its result.
 
 ## Rules
 

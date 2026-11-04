@@ -1,0 +1,27 @@
+flowchart LR
+    producers["Product services<br/><i>[REST clients]</i>"]:::external
+
+    subgraph service["Notification service"]
+        api["Intake API<br/><i>[FastAPI]</i>"]
+        router["Router<br/><i>[Python]</i>"]
+        prefs["Preferences<br/><i>[Python]</i>"]
+        templates["Template engine<br/><i>[Jinja]</i>"]
+        store[("Delivery log<br/><i>[PostgreSQL]</i>")]
+        dispatcher["Dispatcher<br/><i>[Celery]</i>"]
+    end
+
+    email["Email provider"]:::external
+    sms["SMS provider"]:::external
+    push["Push gateway"]:::external
+
+    producers -- Send request --> api
+    api -- Validated event --> router
+    router -- Checks opt-outs --> prefs
+    router -- Renders --> templates
+    router -- Records request --> store
+    templates -- Queues message --> dispatcher
+    dispatcher -- SMTP --> email
+    dispatcher -- REST --> sms
+    dispatcher -- FCM --> push
+
+    classDef external fill:#999999,stroke:#6B6B6B,color:#FFFFFF

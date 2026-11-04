@@ -72,6 +72,40 @@ the icon's rectangle, so `check_layout.py` passes a line that cuts through it. T
 take verticals from below, move the caption above the icon with
 `verticalLabelPosition=top;verticalAlign=bottom`, and take none from above.
 
+For a VPC or subnet, use a group stencil with `fillColor=none`. `check_layout.py` treats
+that as a boundary, and any other fill as an obstacle. Leave out `grStroke=0`, which removes
+the frame:
+
+```python
+AWS_GROUP = (
+    "outlineConnect=0;html=1;whiteSpace=wrap;fontSize=12;collapsible=0;"
+    "shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.{icon};strokeColor={colour};fillColor=none;"
+    "verticalAlign=top;align=left;spacingLeft=30;fontColor={colour};dashed=0;"
+)
+d.node("VPC", x, y, w, h, AWS_GROUP.format(icon="group_vpc2", colour="#8C4FFF"))
+```
+
+## Kubernetes and Azure icons
+
+The same approach and the same checks apply. Confirmed on draw.io 31.7.0:
+
+```python
+K8S_ICON = (
+    "html=1;dashed=0;fillColor=#326CE5;strokeColor=#ffffff;align=center;fontSize=12;"
+    "aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;"
+    "shape=mxgraph.kubernetes.icon;prIcon={name};"
+)
+AZURE_ICON = (
+    "aspect=fixed;html=1;points=[];align=center;image;fontSize=12;"
+    "verticalLabelPosition=bottom;verticalAlign=top;image=img/lib/azure2/{path}.svg;"
+)
+d.node("Ingress", x, y, 78, 78, K8S_ICON.format(name="ing"))
+d.node("Event Hubs", x, y, 78, 78, AZURE_ICON.format(path="analytics/Event_Hubs"))
+```
+
+The [worked examples](https://github.com/xavier-thomas/diagram-lint/blob/master/examples/diagrams/make_diagrams.py)
+use these, and keep their captions off any side that a vertical line leaves from.
+
 ## Other logos
 
 Use the first option that works:

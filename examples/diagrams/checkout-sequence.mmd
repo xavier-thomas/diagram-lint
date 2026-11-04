@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    actor C as Customer
+    participant W as Web app
+    participant O as Orders API
+    participant P as Payment provider
+
+    C->>W: Place order
+    W->>O: POST /orders
+    O->>O: #nbsp;
+    Note left of O: Write the order and reserve stock
+    O->>P: Charge card
+    alt Card accepted
+        P-->>O: Payment captured
+        O-->>W: 201 Created
+        W-->>C: Show confirmation
+    else Card declined
+        P-->>O: Declined
+        O->>O: #nbsp;
+        Note left of O: Release the reserved stock
+        O-->>W: 402 Payment required
+        W-->>C: Ask for another card
+    end
