@@ -219,3 +219,114 @@ def test_write_creates_the_file_and_says_so(
     doc.write(str(path))
     assert path.read_text(encoding="utf-8") == doc.xml()
     assert str(path) in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        pytest.param(lambda d, a, b: d.vlink(a, b, "x"), id="vlink"),
+        pytest.param(lambda d, a, b: d.hlink(a, b, "x"), id="hlink"),
+        pytest.param(lambda d, a, b: d.elbow(a, b, "x", 50, 225), id="elbow"),
+        pytest.param(lambda d, a, b: d.route(a, b, "x", [(50, 225)]), id="route"),
+    ],
+)
+def test_pinned_calls_add_no_jump_unless_asked(call: Any) -> None:
+    doc, a, b = _doc(UPPER_LEFT, LOWER_RIGHT)
+    call(doc, a, b)
+    assert "jumpStyle" not in doc.xml()
+
+
+# Away from the origin and of different sizes, so that no offset or size cancels out.
+HIGH: Rect = (200, 100, 100, 50)
+LOW: Rect = (200, 300, 100, 100)
+NEAR: Rect = (100, 200, 50, 100)
+FAR: Rect = (400, 250, 150, 100)
+
+
+@pytest.mark.parametrize(
+    ("a_rect", "b_rect", "lane", "expected"),
+    [
+        pytest.param(HIGH, LOW, None, [(250, 150), (250, 225), (250, 300)], id="down"),
+        pytest.param(LOW, HIGH, None, [(250, 300), (250, 225), (250, 150)], id="up"),
+        pytest.param(HIGH, LOW, 220, [(220, 150), (220, 225), (220, 300)], id="down-in-a-lane"),
+    ],
+)
+def test_vlink_draws_one_vertical_through_the_gap(
+    a_rect: Rect, b_rect: Rect, lane: float | None, expected: list[Point], tmp_path: Path
+) -> None:
+    doc, a, b = _doc(a_rect, b_rect)
+    doc.vlink(a, b, "x", lane=lane)
+    assert _drawn_route(doc, tmp_path) == expected
+
+
+@pytest.mark.parametrize(
+    ("a_rect", "b_rect", "lane", "expected"),
+    [
+        pytest.param(NEAR, FAR, None, [(150, 275), (275, 275), (400, 275)], id="rightwards"),
+        pytest.param(FAR, NEAR, None, [(400, 275), (275, 275), (150, 275)], id="leftwards"),
+        pytest.param(NEAR, FAR, 290, [(150, 290), (275, 290), (400, 290)], id="right-in-a-lane"),
+    ],
+)
+def test_hlink_draws_one_horizontal_through_the_gap(
+    a_rect: Rect, b_rect: Rect, lane: float | None, expected: list[Point], tmp_path: Path
+) -> None:
+    doc, a, b = _doc(a_rect, b_rect)
+    doc.hlink(a, b, "x", lane=lane)
+    assert _drawn_route(doc, tmp_path) == expected
+
+
+ABOVE_AWAY: Rect = (1000, 1000, 100, 50)
+BELOW_AWAY: Rect = (1000, 1200, 100, 50)
+LEFT_AWAY: Rect = (1000, 1000, 100, 50)
+RIGHT_AWAY: Rect = (1400, 1000, 100, 50)
+
+
+@pytest.mark.parametrize(
+    ("a_rect", "b_rect", "corners", "expected"),
+    [
+        pytest.param(
+            ABOVE_AWAY,
+            BELOW_AWAY,
+            [(1050, 900), (1300, 900), (1300, 1225)],
+            [(1050, 1000), (1050, 900), (1300, 900), (1300, 1225), (1100, 1225)],
+            id="top-to-side-away-from-the-origin",
+        ),
+        pytest.param(
+            ABOVE_AWAY,
+            BELOW_AWAY,
+            [(1300, 1025), (1300, 1300), (1050, 1300)],
+            [(1100, 1025), (1300, 1025), (1300, 1300), (1050, 1300), (1050, 1250)],
+            id="side-to-bottom-away-from-the-origin",
+        ),
+        pytest.param(
+            LEFT_AWAY,
+            RIGHT_AWAY,
+            [(1000, 900), (1500, 900)],
+            [(1000, 1000), (1000, 900), (1500, 900), (1500, 1000)],
+            id="corners-on-the-outer-edges-count-as-within-the-width",
+        ),
+        pytest.param(
+            LEFT_AWAY,
+            RIGHT_AWAY,
+            [(1100, 900), (1400, 900)],
+            [(1100, 1000), (1100, 900), (1400, 900), (1400, 1000)],
+            id="corners-on-the-inner-edges-count-as-within-the-width",
+        ),
+    ],
+)
+def test_route_anchors_are_relative_to_the_node(
+    a_rect: Rect,
+    b_rect: Rect,
+    corners: list[Point],
+    expected: list[Point],
+    tmp_path: Path,
+) -> None:
+    doc, a, b = _doc(a_rect, b_rect)
+    doc.route(a, b, "x", corners)
+    assert _drawn_route(doc, tmp_path) == expected
+
+
+def test_edge_returns_the_id_it_wrote() -> None:
+    doc, a, b = _doc(ABOVE, BELOW)
+    edge_id = doc.edge(a, b)
+    assert ET.fromstring(doc.xml()).find(f".//mxCell[@id='{edge_id}']").get("edge") == "1"

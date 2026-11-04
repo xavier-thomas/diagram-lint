@@ -165,3 +165,75 @@ def test_file_without_a_graph_model_is_refused(tmp_path: Path) -> None:
     source.write_text("<mxfile/>", encoding="utf-8")
     with pytest.raises(SystemExit, match=r"not a draw\.io file"):
         preview.render(str(source))
+
+
+def _text_at(svg: ET.Element, text: str) -> tuple[str | None, str | None]:
+    found = next(t for t in svg.iter(f"{SVG}text") if t.text == text)
+    return found.get("x"), found.get("y")
+
+
+def test_node_text_is_centred_and_stacked_from_the_top(tmp_path: Path) -> None:
+    doc = lib.Doc("t")
+    doc.node(lib.label("Web", "React"), 10, 20, 100, 50, lib.S_CONT)
+    svg = _render(doc, tmp_path)
+    assert _text_at(svg, "Web") == ("100.0", "76.0")
+    assert _text_at(svg, "[React]") == ("100.0", "89.0")
+
+
+def test_boundary_title_sits_at_the_top(tmp_path: Path) -> None:
+    doc = lib.Doc("t")
+    doc.node("Boundary", 0, 0, 300, 300, lib.S_BOUND)
+    assert _text_at(_render(doc, tmp_path), "Boundary") == ("190.0", "54.0")
+
+
+def test_person_head_and_shoulders_are_centred(tmp_path: Path) -> None:
+    doc = lib.Doc("t")
+    doc.person("Analyst", 0, 0, 180, 160)
+    svg = _render(doc, tmp_path)
+    head = next(svg.iter(f"{SVG}circle"))
+    assert (head.get("cx"), head.get("cy")) == ("130.0", "58.0")
+    assert next(svg.iter(f"{SVG}path")).get("d", "").startswith("M113.0,90.0 ")
+
+
+def test_edge_label_sits_beside_a_vertical_edge(tmp_path: Path) -> None:
+    doc = lib.Doc("t")
+    a = doc.node("A", 0, 0, 100, 100, lib.S_CONT)
+    b = doc.node("B", 0, 300, 100, 100, lib.S_CONT)
+    doc.vlink(a, b, "first<br/>second")
+    svg = _render(doc, tmp_path)
+    assert _text_at(svg, "first") == ("142.0", "240.0")
+    assert _text_at(svg, "second") == ("142.0", "252.0")
+
+
+def test_edge_label_straddles_a_horizontal_edge(tmp_path: Path) -> None:
+    doc = lib.Doc("t")
+    a = doc.node("A", 0, 0, 100, 100, lib.S_CONT)
+    b = doc.node("B", 300, 0, 100, 100, lib.S_CONT)
+    doc.hlink(a, b, "above<br/>below")
+    svg = _render(doc, tmp_path)
+    assert _text_at(svg, "above") == ("240.0", "84.0")
+    assert _text_at(svg, "below") == ("240.0", "108.0")
+
+
+def test_main_renders_every_file(tmp_path: Path) -> None:
+    doc, _, _ = _pair()
+    one = tmp_path / "one.drawio"
+    two = tmp_path / "two.drawio"
+    doc.write(str(one))
+    doc.write(str(two))
+    assert preview.main(["preview.py", str(one), str(two)]) == 0
+    assert (tmp_path / "one.preview.svg").exists()
+    assert (tmp_path / "two.preview.svg").exists()
+
+
+def test_main_renders_a_single_file(tmp_path: Path) -> None:
+    doc, _, _ = _pair()
+    source = tmp_path / "only.drawio"
+    doc.write(str(source))
+    assert preview.main(["preview.py", str(source)]) == 0
+    assert (tmp_path / "only.preview.svg").exists()
+
+
+def test_main_without_files_prints_usage(capsys: pytest.CaptureFixture[str]) -> None:
+    assert preview.main(["preview.py"]) == 2
+    assert "usage" in capsys.readouterr().err

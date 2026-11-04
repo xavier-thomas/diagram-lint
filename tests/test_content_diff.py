@@ -119,3 +119,61 @@ def test_wrong_argument_count_prints_usage(
 ) -> None:
     assert content_diff.main(argv) == 2
     assert "usage" in capsys.readouterr().err
+
+
+def _edge_between(tmp_path: Path, name: str, src: str, dst: str, style: str = lib.S_EDGE) -> str:
+    doc = lib.Doc("t")
+    ids = {label: doc.node(label, 0, i * 100, 100, 50, lib.S_CONT) for i, label in enumerate("ABC")}
+    doc.edge(ids[src], ids[dst], "uses", style)
+    path = tmp_path / name
+    doc.write(str(path))
+    return str(path)
+
+
+@pytest.mark.parametrize(
+    ("after_src", "after_dst"),
+    [
+        pytest.param("B", "C", id="different-source"),
+        pytest.param("A", "B", id="different-target"),
+    ],
+)
+def test_reconnecting_one_end_of_an_edge_fails(
+    after_src: str, after_dst: str, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    before = _edge_between(tmp_path, "before.drawio", "A", "C")
+    after = _edge_between(tmp_path, "after.drawio", after_src, after_dst)
+    capsys.readouterr()
+    assert content_diff.main(["content_diff.py", before, after]) == 1
+    assert "edge differs:" in capsys.readouterr().out
+
+
+def test_edges_are_keyed_by_their_labels_and_dash(tmp_path: Path) -> None:
+    solid = _edge_between(tmp_path, "solid.drawio", "A", "B")
+    dashed = _edge_between(tmp_path, "dashed.drawio", "A", "B", lib.S_EDGE_DASH)
+    assert list(content_diff.content(solid)[1]) == [("A", "B", "uses", False)]
+    assert list(content_diff.content(dashed)[1]) == [("A", "B", "uses", True)]
+
+
+@pytest.mark.parametrize(
+    ("centre_x", "centre_y", "inside"),
+    [
+        pytest.param(101, 200, True, id="just-inside-the-left-side"),
+        pytest.param(100, 200, False, id="on-the-left-side"),
+        pytest.param(299, 200, True, id="just-inside-the-right-side"),
+        pytest.param(300, 200, False, id="on-the-right-side"),
+        pytest.param(200, 101, True, id="just-inside-the-top-side"),
+        pytest.param(200, 100, False, id="on-the-top-side"),
+        pytest.param(200, 299, True, id="just-inside-the-bottom-side"),
+        pytest.param(200, 300, False, id="on-the-bottom-side"),
+    ],
+)
+def test_a_box_holds_the_nodes_whose_centre_is_inside(
+    centre_x: float, centre_y: float, inside: bool, tmp_path: Path
+) -> None:
+    doc = lib.Doc("t")
+    doc.node("Box", 100, 100, 200, 200, lib.S_BOUND)
+    doc.node("N", centre_x - 50, centre_y - 25, 100, 50, lib.S_CONT)
+    path = tmp_path / "t.drawio"
+    doc.write(str(path))
+    expected = ("Box", ("N",) if inside else ())
+    assert list(content_diff.content(str(path))[2]) == [expected]

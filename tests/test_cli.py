@@ -69,8 +69,7 @@ def test_content_diff_exit_codes(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 def test_preview_renders_every_file(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     one = _drawio(tmp_path, "one.drawio", pinned=True)
     two = _drawio(tmp_path, "two.drawio", pinned=True)
-    monkeypatch.setattr(sys, "argv", ["preview.py", one, two])
-    runpy.run_path(str(SCRIPTS / "preview.py"), run_name="__main__")
+    assert _exit_code(monkeypatch, "preview.py", one, two) == 0
     assert (tmp_path / "one.preview.svg").exists()
     assert (tmp_path / "two.preview.svg").exists()
 

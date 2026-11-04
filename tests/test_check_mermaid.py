@@ -83,3 +83,14 @@ def test_exit_codes(tmp_path: Path) -> None:
     assert check_mermaid.main(["check_mermaid.py"]) == 0
     assert check_mermaid.main(["check_mermaid.py", str(clean)]) == 0
     assert check_mermaid.main(["check_mermaid.py", str(clean), str(bad)]) == 1
+
+
+def test_summary_counts_files_and_labels(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    good = tmp_path / "good.mmd"
+    bad = tmp_path / "bad.mmd"
+    good.write_text("sequenceDiagram\n    A->>B: text\n", encoding="utf-8")
+    bad.write_text("sequenceDiagram\n    A->>A: text\n", encoding="utf-8")
+    assert check_mermaid.main(["check_mermaid.py", str(good), str(bad)]) == 1
+    assert "2 files, 1 self-message labels to move" in capsys.readouterr().out

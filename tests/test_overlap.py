@@ -91,3 +91,31 @@ def test_a_line_jump_does_not_excuse_an_overlap(
     out = capsys.readouterr().out
     assert code != 0
     assert "is drawn on top of" in out
+
+
+@pytest.mark.parametrize(
+    ("a", "b", "c", "d"),
+    [
+        pytest.param((200, 0), (200, 100), (200, 50), (200, 150), id="vertical-far-out"),
+        pytest.param((0, 500), (100, 500), (50, 500), (150, 500), id="horizontal-far-out"),
+        pytest.param((0, 0), (100, 0), (99, 0), (200, 0), id="sharing-one-pixel"),
+    ],
+)
+def test_overlap_is_found_wherever_the_segments_are(
+    a: check_layout.Point, b: check_layout.Point, c: check_layout.Point, d: check_layout.Point
+) -> None:
+    assert check_layout.segments_overlap(a, b, c, d)
+
+
+@pytest.mark.parametrize(
+    ("a", "b", "c", "d"),
+    [
+        pytest.param((0, 0), (100, 0), (99.5, 0), (200, 0), id="sharing-half-a-pixel"),
+        pytest.param((0, 0), (100, 0), (20, 0), (80, 50), id="second-end-off-the-line"),
+        pytest.param((0, 0), (100, 0), (20, 50), (80, 0), id="first-end-off-the-line"),
+    ],
+)
+def test_short_or_diverging_segments_do_not_overlap(
+    a: check_layout.Point, b: check_layout.Point, c: check_layout.Point, d: check_layout.Point
+) -> None:
+    assert not check_layout.segments_overlap(a, b, c, d)

@@ -182,3 +182,146 @@ def test_one_bad_file_fails_the_run_and_every_file_is_reported(
 def test_no_arguments_prints_usage(capsys: pytest.CaptureFixture[str]) -> None:
     assert check_layout.main(["check_layout.py"]) == 2
     assert "usage" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    ("p", "q", "rect"),
+    [
+        pytest.param((0, 10), (100, 10), (40, 0, 20, 20), id="horizontal-through-the-middle"),
+        pytest.param((10, 0), (10, 100), (0, 40, 20, 20), id="vertical-through-the-middle"),
+        pytest.param((-100, 10), (100, 10), (5, 5, 10, 10), id="horizontal-across-the-origin"),
+        pytest.param((10, -100), (10, 100), (5, 5, 10, 10), id="vertical-across-the-origin"),
+        pytest.param((0, 10), (100, 10), (98, 0, 10, 20), id="ending-just-inside"),
+    ],
+)
+def test_segment_with_both_ends_outside_can_still_hit(
+    p: check_layout.Point, q: check_layout.Point, rect: check_layout.Rect
+) -> None:
+    assert check_layout.seg_rect_hit(p, q, rect)
+
+
+BOX: check_layout.Rect = (100, 100, 100, 100)
+
+
+def _across_at_x(x: float) -> tuple[check_layout.Point, check_layout.Point]:
+    return (x, 0), (x, 300)
+
+
+def _across_at_y(y: float) -> tuple[check_layout.Point, check_layout.Point]:
+    return (0, y), (300, y)
+
+
+@pytest.mark.parametrize(
+    "segment",
+    [
+        pytest.param(_across_at_x(100), id="on-the-left-side"),
+        pytest.param(_across_at_x(100.5), id="half-a-pixel-inside-the-left-side"),
+        pytest.param(_across_at_x(200), id="on-the-right-side"),
+        pytest.param(_across_at_x(199.5), id="half-a-pixel-inside-the-right-side"),
+        pytest.param(_across_at_y(100), id="on-the-top-side"),
+        pytest.param(_across_at_y(100.5), id="half-a-pixel-inside-the-top-side"),
+        pytest.param(_across_at_y(200), id="on-the-bottom-side"),
+        pytest.param(_across_at_y(199.5), id="half-a-pixel-inside-the-bottom-side"),
+    ],
+)
+def test_segment_within_the_tolerance_of_a_side_does_not_hit(
+    segment: tuple[check_layout.Point, check_layout.Point],
+) -> None:
+    assert not check_layout.seg_rect_hit(*segment, BOX)
+
+
+@pytest.mark.parametrize(
+    "segment",
+    [
+        pytest.param(_across_at_x(101), id="inside-the-left-side"),
+        pytest.param(_across_at_x(199), id="inside-the-right-side"),
+        pytest.param(_across_at_y(101), id="inside-the-top-side"),
+        pytest.param(_across_at_y(199), id="inside-the-bottom-side"),
+    ],
+)
+def test_segment_past_the_tolerance_of_a_side_hits(
+    segment: tuple[check_layout.Point, check_layout.Point],
+) -> None:
+    assert check_layout.seg_rect_hit(*segment, BOX)
+
+
+@pytest.mark.parametrize(
+    ("route", "expected"),
+    [
+        pytest.param([(0, 0), (0.4, 100)], True, id="vertical-within-half-a-pixel"),
+        pytest.param([(0, 0), (0.5, 100)], False, id="vertical-at-half-a-pixel"),
+        pytest.param([(0, 0), (100, 0.4)], True, id="horizontal-within-half-a-pixel"),
+        pytest.param([(0, 0), (100, 0.5)], False, id="horizontal-at-half-a-pixel"),
+    ],
+)
+def test_axis_aligned_allows_for_rounding_only(
+    route: list[check_layout.Point], expected: bool
+) -> None:
+    assert check_layout.axis_aligned(route) is expected
+
+
+@pytest.mark.parametrize(
+    ("route", "expected"),
+    [
+        pytest.param(
+            [(-100, 0), (-50, 0), (0, 0)], [(-100, 0), (0, 0)], id="forward-at-negative-x"
+        ),
+        pytest.param(
+            [(0, -100), (0, -50), (0, 0)], [(0, -100), (0, 0)], id="forward-at-negative-y"
+        ),
+        pytest.param(
+            [(-100, 0), (-50, 0), (-80, 0)], [(-100, 0), (-50, 0), (-80, 0)], id="reversal-in-x"
+        ),
+        pytest.param([(0, 0), (0, 0), (0, 50)], [(0, 0), (0, 50)], id="repeated-waypoint"),
+        pytest.param([(0, 0), (0, 1), (0, 0.5)], [(0, 0), (0, 1), (0, 0.5)], id="small-reversal"),
+        pytest.param(
+            [(0, 0), (0.5, 50), (0.5, 100)],
+            [(0, 0), (0.5, 50), (0.5, 100)],
+            id="vertical-first-leg-off-by-half-a-pixel",
+        ),
+        pytest.param(
+            [(0, 0), (0, 50), (0.5, 100)],
+            [(0, 0), (0, 50), (0.5, 100)],
+            id="vertical-second-leg-off-by-half-a-pixel",
+        ),
+        pytest.param(
+            [(0, 0), (50, 0.5), (100, 0.5)],
+            [(0, 0), (50, 0.5), (100, 0.5)],
+            id="horizontal-first-leg-off-by-half-a-pixel",
+        ),
+        pytest.param(
+            [(0, 0), (50, 0), (100, 0.5)],
+            [(0, 0), (50, 0), (100, 0.5)],
+            id="horizontal-second-leg-off-by-half-a-pixel",
+        ),
+    ],
+)
+def test_merge_runs_merges_only_straight_forward_runs(
+    route: list[check_layout.Point], expected: list[check_layout.Point]
+) -> None:
+    assert check_layout.merge_runs(route) == expected
+
+
+def test_cross_is_signed_by_turning_direction() -> None:
+    assert check_layout.cross((0, 0), (1, 0), (0, 1)) == 1
+    assert check_layout.cross((0, 0), (0, 1), (1, 0)) == -1
+
+
+ACROSS = ((0, 0), (100, 0))
+
+
+@pytest.mark.parametrize(
+    ("other", "expected"),
+    [
+        pytest.param(((50, -50), (50, 50)), True, id="crossing"),
+        pytest.param(((50, 10), (50, 50)), False, id="stopping-short"),
+        pytest.param(((50, -50), (50, -10)), False, id="stopping-short-from-the-other-side"),
+        pytest.param(((200, -50), (200, 50)), False, id="beyond-the-end"),
+        pytest.param(((50, 0), (50, 50)), False, id="touching-from-one-side"),
+    ],
+)
+def test_segments_cross_only_when_each_straddles_the_other(
+    other: tuple[check_layout.Point, check_layout.Point], expected: bool
+) -> None:
+    assert check_layout.segments_cross(*ACROSS, *other) is expected
+    assert check_layout.segments_cross(*other, *ACROSS) is expected
