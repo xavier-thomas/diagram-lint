@@ -50,3 +50,63 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  mutation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # Pinned, because a new version can change the mutants and so move the score
+      - name: Install tools
+        run: pip install pytest pytest-gremlins==1.13.2
+
+      - name: Run mutation tests
+        run: pytest --gremlins --gremlin-parallel --gremlin-report=console,html,json
+
+      # Reports only for now. Add `--fail-under 85` to fail a build below that score.
+      - name: Summarise
+        run: python3 .github/scripts/mutation_score.py coverage/gremlins/gremlins.json >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: mutation-report
+          path: coverage/gremlins/
+          if-no-files-found: error
+
+  # A separate job, so that the third-party tools above never run with deployment access.
+  publish-mutation-report:
+    if: github.event_name == 'push'
+    needs: mutation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: mutation-report
+          path: ${{ runner.temp }}/mutation-report
+
+      # The report for people, and the score for the README badge
+      - name: Build the site
+        run: |
+          mkdir site
+          cp "$RUNNER_TEMP/mutation-report/index.html" site/
+          python3 .github/scripts/mutation_score.py "$RUNNER_TEMP/mutation-report/gremlins.json" --badge site/mutation.json
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v5

@@ -105,9 +105,14 @@ def render(path: str) -> pathlib.Path:
     return dst
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
+def main(argv: list[str]) -> int:
+    if len(argv) < 2:
         sys.stderr.write("usage: preview.py file.drawio [...]\n")
-        sys.exit(2)
-    for f in sys.argv[1:]:
+        return 2
+    for f in argv[1:]:
         render(f)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
