@@ -13,6 +13,16 @@ Sequences, logic flows and component diagrams are edited directly as `diagrams/*
 
 If a diagram must be overlap-free, move it to draw.io and record that decision.
 
+An edge often runs behind a box when one node fans out to several others that share a rank
+with unrelated boxes. Give the fanning node a rank of its own, then render and inspect it.
+
+## Colours
+
+The starter `mermaid-config.json` uses `theme: base` with the C4 palette from
+`drawio_lib.py`, so both toolchains match. Mermaid takes flowchart edge labels and `actor`
+names from the same setting as node text, so white node text alone leaves them white on
+white. The config's `themeCSS` sets them back to dark. Keep it if you change the palette.
+
 ## Box padding
 
 If text is tight in its box, fix the font rather than the padding. Set `fontFamily`
@@ -66,7 +76,8 @@ The `Makefile` passes these flags:
 |------|-----|
 | `-b white` | Sets the background explicitly |
 | `-w 2600` | Sets the page width. The default is 800 |
-| `-c <file>` | Names the font Mermaid uses to size and draw text |
+| `-c <file>` | Names the font and palette Mermaid uses |
+| `-s 2` | Renders PNGs at twice the size, as draw.io does |
 | `-p <file>` | Sets a puppeteer config, only when `PUPPETEER_CFG` is given |
 
 If mermaid-cli cannot find Chrome, point it at one:

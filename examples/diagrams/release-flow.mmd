@@ -1,0 +1,11 @@
+flowchart LR
+    merge([Merge to main]) --> build[Build and test]
+    build --> passed{Tests pass?}
+    passed -- No --> notify[Notify the author]
+    passed -- Yes --> canary[Canary at 5%]
+    canary --> healthy{Errors under 1%?}
+    healthy -- No --> rollback[Roll back]
+    rollback --> notify
+    healthy -- Yes --> full[Roll out to 100%]
+    full --> done([Release complete])
+    notify --> stopped([Release stopped])

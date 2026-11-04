@@ -39,7 +39,7 @@ make -C examples/diagrams check
 - **Keep the docs in step.** A change in behaviour may also affect `README.md`, `SKILL.md`
   and the guides in `references/`.
 - **Do not hand-edit generated files.** The `.drawio`, `.svg` and `.png` files are
-  generated. To change the example, edit `make_diagrams.py` or the `.mmd` file, then run
+  generated. To change an example, edit `make_diagrams.py` or its `.mmd` file, then run
   `make -C examples/diagrams`.
 - **Only commit renders that changed for a reason.** PNG bytes drift with fonts and browser
   versions, so leave out any re-render that has no design change.

@@ -16,6 +16,8 @@ ifdef PUPPETEER_CFG
 MMDC_FLAGS += -p $(PUPPETEER_CFG)
 endif
 
+MMDC_PNG_SCALE := -s 2
+
 DRAWIO_BIN ?= $(shell command -v drawio 2>/dev/null || \
                       echo /Applications/draw.io.app/Contents/MacOS/draw.io)
 DRAWIO_FLAGS := --no-sandbox -x --theme light
@@ -43,7 +45,7 @@ check: sources
 %.svg: %.mmd $(MERMAID_CFG)
 	mmdc $(MMDC_FLAGS) -i $< -o $@
 %.png: %.mmd $(MERMAID_CFG)
-	mmdc $(MMDC_FLAGS) -i $< -o $@
+	mmdc $(MMDC_FLAGS) $(MMDC_PNG_SCALE) -i $< -o $@
 %.svg: %.drawio
 	$(DRAWIO_BIN) $(DRAWIO_FLAGS) -f svg $(DRAWIO_SVG_FLAGS) -o $@ $<
 %.png: %.drawio

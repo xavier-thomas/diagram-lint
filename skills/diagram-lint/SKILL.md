@@ -21,7 +21,7 @@ changes are lost on the next run.
 
 Add new `.drawio` files to the `DRAWIO` list in the `Makefile`. New `.mmd` files
 are picked up automatically. See the
-[worked example](https://github.com/xavier-thomas/diagram-lint/tree/master/examples/diagrams).
+[worked examples](https://github.com/xavier-thomas/diagram-lint/tree/master/examples/diagrams).
 
 ## Setup
 
@@ -31,7 +31,7 @@ If the project has no `diagrams/` directory:
    into a new `diagrams/` directory.
 2. In `Makefile` and `make_diagrams.py`, set `SKILL` to this directory's location.
 3. In `mermaid-config.json`, set `fontFamily` to a font that every machine rendering
-   the diagrams has.
+   the diagrams has. The file also sets a palette that matches the draw.io styles.
 4. Add `.drawio-sources` and `*.preview.svg` to the project's `.gitignore`.
 
 ## Commands
