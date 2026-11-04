@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # The oldest version the skill supports, as in pyproject.toml
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install tools
+        run: pip install ruff mypy pytest
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Type check
+        run: mypy --strict skills/diagram-lint/scripts
+
+      - name: Test
+        run: pytest
+
+      - name: Check example diagrams
+        run: make -C examples/diagrams check
