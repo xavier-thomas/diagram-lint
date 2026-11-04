@@ -1,7 +1,8 @@
 ---
 name: diagram-lint
 description: Produce, check and render architecture diagrams as code. Use when adding a diagram, editing a Mermaid .mmd source or a draw.io generator script, rendering the .svg and .png outputs, or checking a draw.io layout before trusting it.
-license: BSD-3-Clause
+license: Apache-2.0
+compatibility: Python 3.12+. Rendering needs draw.io desktop and mermaid-cli.
 metadata:
   version: "1.0"
 ---
@@ -19,8 +20,19 @@ Never hand-edit `.drawio`, `.svg` or `.png` files. They are generated, so manual
 changes are lost on the next run.
 
 Add new `.drawio` files to the `DRAWIO` list in the `Makefile`. New `.mmd` files
-are picked up automatically. See `examples/diagrams/` in this skill's repository
-for a worked example.
+are picked up automatically. See the
+[worked example](https://github.com/xavier-thomas/diagram-lint/tree/master/examples/diagrams).
+
+## Setup
+
+If the project has no `diagrams/` directory:
+
+1. Copy `assets/Makefile`, `assets/make_diagrams.py` and `assets/mermaid-config.json`
+   into a new `diagrams/` directory.
+2. In `Makefile` and `make_diagrams.py`, set `SKILL` to this directory's location.
+3. In `mermaid-config.json`, set `fontFamily` to a font that every machine rendering
+   the diagrams has.
+4. Add `.drawio-sources` and `*.preview.svg` to the project's `.gitignore`.
 
 ## Commands
 
@@ -30,12 +42,14 @@ where the project keeps its diagram sources.
 ```bash
 python3 diagrams/make_diagrams.py                              # regenerate the .drawio files
 python3 <skill>/scripts/check_layout.py diagrams/*.drawio      # check draw.io geometry
+python3 <skill>/scripts/check_mermaid.py diagrams/*.mmd        # check Mermaid self-messages
 python3 <skill>/scripts/content_diff.py old.drawio new.drawio  # after a re-layout, prove the content is unchanged
 python3 <skill>/scripts/preview.py diagrams/example.drawio     # rough SVG if draw.io is not installed
 make -C diagrams                                               # real renders; needs draw.io desktop and mermaid-cli
 ```
 
-`check_layout.py` fails on any edge it reports as `UNVERIFIED`.
+`check_layout.py` fails on any edge it reports as `UNVERIFIED`. `check_mermaid.py`
+fails on any self-message that carries text. `make -C diagrams check` runs both.
 
 ## Inspect the render
 
@@ -50,7 +64,10 @@ geometry check is not enough: it cannot see a label on a caption or a blank icon
    - No line runs through a node or icon caption.
    - No lines cross, except at an agreed line jump.
    - No lines touch, except at a shared endpoint, and none is drawn on another.
-   - No edge label sits on a caption, another label or an elbow's corner.
+   - No edge label sits on a caption, another label, an elbow's corner or a boundary line.
+   - Every box is larger than its text, with clear space on both sides. No text touches
+     a box's edge or spills outside it.
+   - No step number sits on its text, and no self-message label crosses its lifeline.
    - No icon is an empty box. Unknown stencil names render blank.
    - Every logo is recognisable at its drawn size on a white background.
    - The theme is light, with nothing adapting to a dark viewer.
@@ -67,3 +84,5 @@ geometry check is not enough: it cannot see a label on a caption or a blank icon
 
 Compare only `.drawio` and `.svg` files. PNG bytes drift with fonts and browser
 versions, so comparing them fails builds for no design reason.
+
+Run `make -C diagrams check` as well, if the project has CI. It needs only Python.

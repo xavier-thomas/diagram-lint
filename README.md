@@ -1,8 +1,11 @@
 # diagram-lint
 
+[![Release](https://img.shields.io/github/v/release/xavier-thomas/diagram-lint)](https://github.com/xavier-thomas/diagram-lint/releases/latest)
+[![skills.sh](https://skills.sh/b/xavier-thomas/diagram-lint)](https://skills.sh/xavier-thomas/diagram-lint)
+
 Agent skill for creating professional looking Mermaid and draw.io software and cloud architecture diagrams as code, with built in layout linting and consistency checks.
 
-Use it to enable agents to generate professional looking diagrams that live in version control, that can be used in architecural design documents.
+Use it to enable agents to generate professional looking diagrams that live in version control, that can be used in architectural design documents.
 
 ![Example topology diagram](examples/diagrams/example.png)
 
@@ -20,13 +23,19 @@ Use it to enable agents to generate professional looking diagrams that live in v
   its node. It reports any route it cannot predict as `UNVERIFIED`.
 - **Content (draw.io):** after a re-layout, `content_diff.py` confirms that the node
   labels, edges and boundary contents are unchanged.
+- **Self-messages (Mermaid):** `check_mermaid.py` fails on a self-message that carries
+  text, which would sit on its step number and lifeline.
 - **Render inspection (both):** a checklist catches what the scripts cannot, such as
   labels on captions, blank icons and lines that touch.
 
 ## Install
 
-Copy `skills/diagram-lint/` into your agent's skills directory. For Claude Code, that
-is `.claude/skills/`.
+```bash
+npx skills add xavier-thomas/diagram-lint
+```
+
+In the Claude apps, upload `diagram-lint.zip` from
+[Releases](https://github.com/xavier-thomas/diagram-lint/releases/latest) as a skill.
 
 You need Python 3.12 or later. To render diagrams, you also need
 [draw.io desktop](https://github.com/jgraph/drawio-desktop/releases) and
@@ -48,10 +57,13 @@ make -C examples/diagrams
 
 ## Development
 
+The tests are in `tests/` and are not installed with the skill. Run them after changing
+a script:
+
 ```bash
 ruff check . && mypy --strict skills/diagram-lint/scripts && pytest
 ```
 
 ## Licence
 
-BSD 3-Clause. See `LICENSE`.
+Apache 2.0. See `LICENSE` and [`NOTICE`](skills/diagram-lint/NOTICE).

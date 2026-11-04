@@ -9,9 +9,38 @@ Sequences, logic flows and component diagrams are edited directly as `diagrams/*
   AWS icon.
 - **No pinned layout:** declaration order is the only control, and an edge can still
   route behind an unrelated box. `check_layout.py` reads only `.drawio` files, so the
-  inspection in `SKILL.md` is the whole check.
+  inspection in `SKILL.md` is the only check of the layout.
 
 If a diagram must be overlap-free, move it to draw.io and record that decision.
+
+## Box padding
+
+If text is tight in its box, fix the font rather than the padding. Set `fontFamily`
+in `mermaid-config.json` to a font that every machine rendering the diagrams has.
+
+- Do not raise `wrapPadding`, which pushes message labels onto their arrows.
+- Do not raise `noteMargin`, which leaves the text high in a taller note.
+- Do not shorten the text to make one box fit.
+
+A note over two participants takes its width from them, not from its text, so the font
+cannot fix it. Start the text with `wrap:` to keep it inside the note:
+
+```text
+Note over W,D: wrap: The server checks its cache before it queries the database
+```
+
+## Self-messages
+
+Never put text on a self-message. Mermaid centres the label on the lifeline, and
+`autonumber` puts the step's number on the same line. Keep the step, with its number,
+and put the text in a note:
+
+```text
+L->>L: #nbsp;
+Note right of L: Parse the line and derive the interval start
+```
+
+`scripts/check_mermaid.py` fails on any self-message with visible text.
 
 ## Rendering
 
@@ -37,6 +66,7 @@ The `Makefile` passes these flags:
 |------|-----|
 | `-b white` | Sets the background explicitly |
 | `-w 2600` | Sets the page width. The default is 800 |
+| `-c <file>` | Names the font Mermaid uses to size and draw text |
 | `-p <file>` | Sets a puppeteer config, only when `PUPPETEER_CFG` is given |
 
 If mermaid-cli cannot find Chrome, point it at one:
