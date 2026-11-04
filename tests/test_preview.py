@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib.util
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -13,18 +12,8 @@ import pytest
 SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "diagram-lint" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
+import drawio_lib as lib  # noqa: E402
 import preview  # noqa: E402
-
-
-def _load_lib() -> Any:
-    spec = importlib.util.spec_from_file_location("drawio_lib", SCRIPTS / "drawio_lib.py")
-    assert spec is not None and spec.loader is not None
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-lib = _load_lib()
 
 SVG = "{http://www.w3.org/2000/svg}"
 

@@ -21,3 +21,6 @@ testpaths = ["tests"]
 [tool.coverage.run]
 source = ["skills/diagram-lint/scripts"]
 relative_files = true
+
+[tool.pytest-gremlins]
+paths = ["skills/diagram-lint/scripts"]

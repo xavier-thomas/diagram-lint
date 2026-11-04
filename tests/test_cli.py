@@ -2,27 +2,16 @@
 
 from __future__ import annotations
 
-import importlib.util
 import runpy
 import sys
 from pathlib import Path
-from typing import Any
 
 import pytest
 
 SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "diagram-lint" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-
-def _load_lib() -> Any:
-    spec = importlib.util.spec_from_file_location("drawio_lib", SCRIPTS / "drawio_lib.py")
-    assert spec is not None and spec.loader is not None
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-lib = _load_lib()
+import drawio_lib as lib  # noqa: E402
 
 
 def _exit_code(monkeypatch: pytest.MonkeyPatch, script: str, *args: str) -> int:

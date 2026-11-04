@@ -4,7 +4,6 @@ make `check_layout` able to prove it.
 
 from __future__ import annotations
 
-import importlib.util
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -16,17 +15,7 @@ SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "diagram-lint" / "
 sys.path.insert(0, str(SCRIPTS))
 
 import check_layout  # noqa: E402
-
-
-def _load_lib() -> Any:
-    spec = importlib.util.spec_from_file_location("drawio_lib", SCRIPTS / "drawio_lib.py")
-    assert spec is not None and spec.loader is not None
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-lib = _load_lib()
+import drawio_lib as lib  # noqa: E402
 
 Rect = tuple[float, float, float, float]
 Point = tuple[float, float]

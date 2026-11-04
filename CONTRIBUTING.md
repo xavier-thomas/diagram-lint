@@ -39,6 +39,27 @@ see it locally:
 pytest --cov --cov-report=term-missing
 ```
 
+### Mutation testing
+
+Coverage shows which lines the tests run, not whether they would notice a bug.
+[pytest-gremlins](https://github.com/mikelane/pytest-gremlins) makes small changes to the
+scripts and checks that a test fails for each one. It is optional and not part of CI.
+
+```bash
+pip install pytest-gremlins
+```
+
+```bash
+pytest --gremlins --gremlin-parallel --gremlin-report=console,html
+```
+
+The full report is in `coverage/gremlins/index.html`. A surviving gremlin is a change that
+no test noticed. Some are harmless, so treat them as prompts to look, not as a target to
+reach.
+
+Import a script by name in tests, as in `import drawio_lib`. The tool cannot reach code
+loaded from a file path or run with `runpy`, so it reports that code as untested.
+
 ## Make a change
 
 - **Keep the skill self-contained.** Everything in `skills/diagram-lint/` ships to users,

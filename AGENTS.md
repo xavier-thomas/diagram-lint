@@ -36,6 +36,16 @@ Render the examples. This needs draw.io desktop and mermaid-cli:
 make -C examples/diagrams
 ```
 
+To find what the tests would miss, run mutation testing. This needs `pytest-gremlins`, and
+is not part of CI:
+
+```bash
+pytest --gremlins --gremlin-parallel
+```
+
+Import scripts by name in tests, as in `import drawio_lib`. The tool cannot reach code
+loaded from a file path.
+
 CI runs the lint, type, test and example checks on every pull request and push to `master`,
 and sends test coverage to SonarQube Cloud. It does not render, so inspecting the render is
 still your job.
