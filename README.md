@@ -1,8 +1,11 @@
 # diagram-lint
 
+[![Release](https://img.shields.io/github/v/release/xavier-thomas/diagram-lint)](https://github.com/xavier-thomas/diagram-lint/releases/latest)
+[![skills.sh](https://skills.sh/b/xavier-thomas/diagram-lint)](https://skills.sh/xavier-thomas/diagram-lint)
+
 Agent skill for creating professional looking Mermaid and draw.io software and cloud architecture diagrams as code, with built in layout linting and consistency checks.
 
-Use it to enable agents to generate professional looking diagrams that live in version control, that can be used in architecural design documents.
+Use it to enable agents to generate professional looking diagrams that live in version control, that can be used in architectural design documents.
 
 ![Example topology diagram](examples/diagrams/example.png)
 
@@ -25,8 +28,12 @@ Use it to enable agents to generate professional looking diagrams that live in v
 
 ## Install
 
-Copy `skills/diagram-lint/` into your agent's skills directory. For Claude Code, that
-is `.claude/skills/`.
+```bash
+npx skills add xavier-thomas/diagram-lint
+```
+
+In the Claude apps, upload `diagram-lint.zip` from
+[Releases](https://github.com/xavier-thomas/diagram-lint/releases/latest) as a skill.
 
 You need Python 3.12 or later. To render diagrams, you also need
 [draw.io desktop](https://github.com/jgraph/drawio-desktop/releases) and

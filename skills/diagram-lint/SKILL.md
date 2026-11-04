@@ -2,6 +2,7 @@
 name: diagram-lint
 description: Produce, check and render architecture diagrams as code. Use when adding a diagram, editing a Mermaid .mmd source or a draw.io generator script, rendering the .svg and .png outputs, or checking a draw.io layout before trusting it.
 license: BSD-3-Clause
+compatibility: Python 3.12+. Rendering needs draw.io desktop and mermaid-cli.
 metadata:
   version: "1.0"
 ---
@@ -19,8 +20,16 @@ Never hand-edit `.drawio`, `.svg` or `.png` files. They are generated, so manual
 changes are lost on the next run.
 
 Add new `.drawio` files to the `DRAWIO` list in the `Makefile`. New `.mmd` files
-are picked up automatically. See `examples/diagrams/` in this skill's repository
-for a worked example.
+are picked up automatically. See the
+[worked example](https://github.com/xavier-thomas/diagram-lint/tree/master/examples/diagrams).
+
+## Setup
+
+If the project has no `diagrams/` directory:
+
+1. Copy `assets/Makefile` and `assets/make_diagrams.py` into a new `diagrams/` directory.
+2. In both files, set `SKILL` to this directory's location.
+3. Add `.drawio-sources` and `*.preview.svg` to the project's `.gitignore`.
 
 ## Commands
 
