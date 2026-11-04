@@ -57,10 +57,13 @@ make -C examples/diagrams
 
 ## Development
 
+The tests are in `tests/` and are not installed with the skill. Run them after changing
+a script:
+
 ```bash
 ruff check . && mypy --strict skills/diagram-lint/scripts && pytest
 ```
 
 ## Licence
 
-BSD 3-Clause. See `LICENSE`.
+Apache 2.0. See `LICENSE` and [`NOTICE`](skills/diagram-lint/NOTICE).

@@ -7,9 +7,10 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "diagram-lint" / "scripts"
+sys.path.insert(0, str(SCRIPTS))
 
-import check_mermaid
+import check_mermaid  # noqa: E402
 
 
 def _faults(tmp_path: Path, source: str) -> list[str]:

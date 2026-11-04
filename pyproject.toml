@@ -3,7 +3,7 @@ name = "diagram-lint"
 version = "1.0.0"
 description = "An agent skill for creating draw.io and Mermaid diagrams as code with layout checks & linting."
 requires-python = ">=3.12"
-license = { text = "BSD-3-Clause" }
+license = { text = "Apache-2.0" }
 
 [tool.ruff]
 line-length = 100
@@ -16,4 +16,4 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "DTZ", "T20", "SIM", "R
 strict = true
 
 [tool.pytest.ini_options]
-testpaths = ["skills/diagram-lint/tests"]
+testpaths = ["tests"]

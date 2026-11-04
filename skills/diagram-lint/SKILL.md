@@ -1,7 +1,7 @@
 ---
 name: diagram-lint
 description: Produce, check and render architecture diagrams as code. Use when adding a diagram, editing a Mermaid .mmd source or a draw.io generator script, rendering the .svg and .png outputs, or checking a draw.io layout before trusting it.
-license: BSD-3-Clause
+license: Apache-2.0
 compatibility: Python 3.12+. Rendering needs draw.io desktop and mermaid-cli.
 metadata:
   version: "1.0"

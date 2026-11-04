@@ -14,7 +14,7 @@ from typing import Any
 
 import pytest
 
-SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
+SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "diagram-lint" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 import check_layout  # noqa: E402
