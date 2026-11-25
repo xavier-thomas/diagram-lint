@@ -4,6 +4,9 @@
 
 SKILL ?= ../.claude/skills/diagram-lint
 
+# python3 where it runs, else python (Windows has no python3, or a Store stub).
+PYTHON := $(or $(PYTHON),$(shell python3 -c "" >/dev/null 2>&1 && echo python3 || echo python))
+
 MMD    := $(wildcard *.mmd)
 DRAWIO ?= example.drawio
 
@@ -18,7 +21,12 @@ endif
 
 MMDC_PNG_SCALE := -s 2
 
+# drawio on Linux, draw.io.exe on Windows (on PATH, or where its installer puts
+# it), the app bundle on macOS. Set DRAWIO_BIN to override.
 DRAWIO_BIN ?= $(shell command -v drawio 2>/dev/null || \
+                      command -v draw.io 2>/dev/null || \
+                      { for f in "$$LOCALAPPDATA/Programs/draw.io/draw.io.exe" "$$PROGRAMFILES/draw.io/draw.io.exe"; do \
+                          test -f "$$f" && echo "$$f" && break; done; } | grep . || \
                       echo /Applications/draw.io.app/Contents/MacOS/draw.io)
 DRAWIO_FLAGS := --no-sandbox -x --theme light
 DRAWIO_SVG_FLAGS := --embed-svg-fonts false
@@ -31,15 +39,15 @@ all: sources $(SVGS) $(PNGS)
 # The library is an input: an edit to it regenerates every source.
 sources: .drawio-sources
 .drawio-sources: make_diagrams.py $(SKILL)/scripts/drawio_lib.py
-	python3 make_diagrams.py
+	$(PYTHON) make_diagrams.py
 	@touch $@
 # Without this, the first run cannot find a rule for the renders of a new .drawio file.
 $(DRAWIO): .drawio-sources ;
 
 # Exits non-zero while any edge is UNVERIFIED, so it gates nothing else.
 check: sources
-	python3 $(SKILL)/scripts/check_layout.py $(DRAWIO)
-	python3 $(SKILL)/scripts/check_mermaid.py $(MMD)
+	$(PYTHON) $(SKILL)/scripts/check_layout.py $(DRAWIO)
+	$(PYTHON) $(SKILL)/scripts/check_mermaid.py $(MMD)
 
 # The config is an input: a font change re-renders every Mermaid diagram.
 %.svg: %.mmd $(MERMAID_CFG)
@@ -47,9 +55,9 @@ check: sources
 %.png: %.mmd $(MERMAID_CFG)
 	mmdc $(MMDC_FLAGS) $(MMDC_PNG_SCALE) -i $< -o $@
 %.svg: %.drawio
-	$(DRAWIO_BIN) $(DRAWIO_FLAGS) -f svg $(DRAWIO_SVG_FLAGS) -o $@ $<
+	"$(DRAWIO_BIN)" $(DRAWIO_FLAGS) -f svg $(DRAWIO_SVG_FLAGS) -o $@ $<
 %.png: %.drawio
-	$(DRAWIO_BIN) $(DRAWIO_FLAGS) -f png $(DRAWIO_PNG_SCALE) -o $@ $<
+	"$(DRAWIO_BIN)" $(DRAWIO_FLAGS) -f png $(DRAWIO_PNG_SCALE) -o $@ $<
 
 clean:
 	rm -f $(SVGS) $(PNGS) $(DRAWIO) .drawio-sources
