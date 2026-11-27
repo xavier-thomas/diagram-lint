@@ -4,7 +4,7 @@ description: Produce, check and render architecture diagrams as code. Use when a
 license: Apache-2.0
 compatibility: Python 3.12+. Rendering needs draw.io desktop and mermaid-cli.
 metadata:
-  version: "1.0"
+  version: "1.0.0"
 ---
 
 # Diagram lint
